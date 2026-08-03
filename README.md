@@ -51,9 +51,9 @@ Assets/2DPlatformerToolkit/
 Full documentation for this package and our other products lives on GitBook:
 
 - **Docs home (About):** https://university-of-games.gitbook.io/welcome/
-- **This package:** https://university-of-games.gitbook.io/welcome/products/utilities/shader-pack-cartoon-water-and-environment
+- **This package:** https://university-of-games.gitbook.io/welcome/products/complete-game-tutorials/2d-platformer-toolkit
 - **Community & channels:** https://university-of-games.gitbook.io/welcome/community
 - **Unity Asset Store (publisher):** https://assetstore.unity.com/publishers/25633
 - **Medium articles:** https://medium.com/university-of-games
 
-Questions about the package? Leave a review question on the [Asset Store page](https://assetstore.unity.com/packages/vfx/shaders/shader-pack-cartoon-water-environment-201242) or reach us through the channels listed on the Community page.
+Questions about the package? Reach us through the channels listed on the Community page or the [publisher page](https://assetstore.unity.com/publishers/25633).

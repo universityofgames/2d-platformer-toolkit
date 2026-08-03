@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -145,6 +146,7 @@ namespace PlatformerToolkit.Characters
         private float climbCenterX;
         private Vector2 standingColliderSize;
         private Vector2 standingColliderOffset;
+        private readonly List<Collider2D> ignoredPlatforms = new List<Collider2D>();
 
         /// <summary>
         /// Horizontal input in the -1..1 range. Set this every frame from a controller.
@@ -266,12 +268,14 @@ namespace PlatformerToolkit.Characters
 
             if (IsClimbing)
             {
+                IsWallSliding = false;
                 ApplyClimb();
                 return;
             }
 
             if (IsDashing)
             {
+                IsWallSliding = false;
                 ApplyDashVelocity();
                 return;
             }
@@ -337,6 +341,10 @@ namespace PlatformerToolkit.Characters
         /// </summary>
         public void WallJump(int wallDirection)
         {
+            IsClimbing = false;
+            if (IsDashing)
+                EndDash();
+
             Vector2 velocity = body.linearVelocity;
             velocity.x = -Mathf.Sign(wallDirection) * wallJumpPushSpeed;
             velocity.y = JumpSpeedForHeight(wallJumpHeight);
@@ -461,9 +469,24 @@ namespace PlatformerToolkit.Characters
         private System.Collections.IEnumerator IgnorePlatformRoutine(Collider2D platform)
         {
             Physics2D.IgnoreCollision(bodyCollider, platform, true);
+            ignoredPlatforms.Add(platform);
             yield return new WaitForSeconds(0.35f);
+            RestorePlatformCollision(platform);
+        }
+
+        private void RestorePlatformCollision(Collider2D platform)
+        {
             if (platform != null)
                 Physics2D.IgnoreCollision(bodyCollider, platform, false);
+            ignoredPlatforms.Remove(platform);
+        }
+
+        private void OnDisable()
+        {
+            // Coroutines die with the component — never leave one-way
+            // platforms permanently ignored.
+            for (int i = ignoredPlatforms.Count - 1; i >= 0; i--)
+                RestorePlatformCollision(ignoredPlatforms[i]);
         }
 
         private void ApplyDashVelocity()
@@ -498,6 +521,8 @@ namespace PlatformerToolkit.Characters
         private void Launch(float verticalSpeed)
         {
             IsClimbing = false;
+            if (IsDashing)
+                EndDash();
             if (IsCrouching)
                 SetCrouching(false);
 

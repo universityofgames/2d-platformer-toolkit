@@ -173,7 +173,11 @@ namespace PlatformerToolkit.Characters
                 return;
             }
 
-            if (currentLadder != null && Mathf.Abs(verticalInput) > VerticalInputThreshold)
+            // Climb up from anywhere; climb down only while airborne —
+            // pressing down while standing at a ladder's base is a crouch.
+            bool wantsUp = verticalInput > VerticalInputThreshold;
+            bool wantsDown = verticalInput < -VerticalInputThreshold && !motor.IsGrounded;
+            if (currentLadder != null && (wantsUp || wantsDown))
             {
                 motor.StartClimb(currentLadder.ClimbCenterX);
                 motor.ClimbInput = verticalInput;
@@ -196,12 +200,19 @@ namespace PlatformerToolkit.Characters
 
         private void OnTriggerExit2D(Collider2D other)
         {
-            if (currentLadder != null && other.gameObject == currentLadder.gameObject)
-            {
-                currentLadder = null;
-                if (motor.IsClimbing)
-                    motor.StopClimb();
-            }
+            if (currentLadder == null || other.gameObject != currentLadder.gameObject)
+                return;
+
+            currentLadder = null;
+            if (!motor.IsClimbing)
+                return;
+
+            motor.StopClimb();
+
+            // Climbing off the top: a small pop clears the ladder's edge
+            // instead of jittering in and out of the zone.
+            if (verticalInput > VerticalInputThreshold)
+                motor.Bounce(0.6f);
         }
 
         private void TryJump()

@@ -81,6 +81,9 @@ namespace PlatformerToolkit.Characters
             if (motor != null)
             {
                 motor.MoveInput = 0f;
+                motor.ClimbInput = 0f;
+                motor.StopClimb();
+                motor.SetCrouching(false);
                 motor.SetVelocity(Vector2.zero);
             }
 

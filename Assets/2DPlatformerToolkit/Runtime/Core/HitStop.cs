@@ -58,6 +58,10 @@ namespace PlatformerToolkit.Core
 
             private void Update()
             {
+                // Never fight a menu pause — resume once the game unpauses.
+                if (GamePauser.IsPaused)
+                    return;
+
                 if (frozen && Time.unscaledTime >= resumeAt)
                 {
                     Time.timeScale = previousTimeScale;
